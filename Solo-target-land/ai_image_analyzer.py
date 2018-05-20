@@ -5,7 +5,7 @@ from keras.optimizers import Adam
 from keras.preprocessing import image
 import numpy as np
 
-Model = "../target_detection3.h5"
+Model = "../target_detection4.h5"
 
 class ai_image_analyzer:
 
@@ -19,7 +19,7 @@ class ai_image_analyzer:
         test_image = np.expand_dims(test_image, axis=0)
         result = self.model.predict(test_image)
        
-        is_target = np.argmax(result[0]) == 1
+        is_target = np.argmax(result[0]) == 0
         print("Test")
         print(result)
 
