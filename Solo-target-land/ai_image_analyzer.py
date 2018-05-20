@@ -18,7 +18,11 @@ class ai_image_analyzer:
         test_image = image.img_to_array(test_image)
         test_image = np.expand_dims(test_image, axis=0)
         result = self.model.predict(test_image)
+       
+        is_target = np.argmax(result[0]) == 1
+        print("Test")
+        print(result)
 
-        is_target = np.argmax(result[0]) == 0
-
+        
         return is_target
+        
