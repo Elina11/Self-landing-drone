@@ -3,7 +3,10 @@
 ./target_detection2.h5 filter=lfs diff=lfs merge=lfs -text
 ./target_detection3.h5 filter=lfs diff=lfs merge=lfs -text
 ./target_detection4.h5 filter=lfs diff=lfs merge=lfs -text
+<<<<<<< HEAD
+=======
 ./testVideos/* filter=lfs diff=lfs merge=lfs -text
+>>>>>>> d550d88860c7b1fe7a78aaaa75d037f46cdfaac1
 ./testVideos/TestVideo1.MP4 filter=lfs diff=lfs merge=lfs -text
 ./testVideos/TestVideo2.MP4 filter=lfs diff=lfs merge=lfs -text
 ./testVideos/TestVideo3.MP4 filter=lfs diff=lfs merge=lfs -text
