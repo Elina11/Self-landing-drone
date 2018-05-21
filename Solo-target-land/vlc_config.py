@@ -11,10 +11,9 @@ VLC_APP = "/Applications/VLC.app/Contents/MacOS/VLC"
 #SOLO_V_LINK = currDir + "/../sololink.sdp"
 
 # Test Videos taking from flying Drone
-#SOLO_V_LINK = currDir + "/../testVideos/TestVideo1.MP4"
-SOLO_V_LINK = currDir + "/../testVideos/TestVideo2.MP4"
+#SOLO_V_LINK = currDir + "/../testVideos/TestVideo2.MP4"
 #SOLO_V_LINK = currDir + "/../testVideos/TestVideo3.MP4"
-#SOLO_V_LINK = currDir + "/../testVideos/TestVideo4.MP4"
+SOLO_V_LINK = currDir + "/../testVideos/TestVideo4.MP4"
 
 # Directory for Video screenshots
 SC_PATH = currDir + "/in_images"
