@@ -22,9 +22,9 @@ def deletefiles(paths):
     return picts
 
 AiModel = AImage.ai_image_analyzer()
-
+ncPro = subprocess.Popen("nc 10.1.1.1 5502", shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
 vlcPro = subprocess.Popen(VLC.VLC_START, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
-time.sleep(2)
+time.sleep(4)
 x=1
 while(vlcPro.poll() == None):
 
@@ -34,13 +34,17 @@ while(vlcPro.poll() == None):
 
     res = AiModel.isTarget(sc_image)
 
-    print("File" + sc_image + "is: " + res)
+    if res:
+        print("File" + sc_image + "is: " + "target")
+    else:
+        print("File" + sc_image + "is: " + "not target")
 
     x += 1
     subprocess.Popen(cleanFiles, shell=True, stdout=subprocess.PIPE)
 
     time.sleep(1)
-
+if(ncPro.poll() == None):
+    os.killpg(os.getpgid(ncPro.pid), signal.SIGTERM)
 if(vlcPro.poll() == None):
     os.killpg(os.getpgid(vlcPro.pid), signal.SIGTERM)
 exit(1)
