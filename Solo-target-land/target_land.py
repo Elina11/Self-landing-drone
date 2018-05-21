@@ -7,7 +7,8 @@ import signal
 import vlc_config as VLC
 import ai_image_analyzer as AImage
 
-
+# Finds the latest screenshots.
+# Returns most recent screen shot and command to delete files.
 def newest(path):
     files = os.listdir(path)
     filtered_files = filter(lambda x: ".swp" not in x, files)
@@ -15,33 +16,67 @@ def newest(path):
     deleteThis = "rm -r " + deletefiles(paths)
     return max(paths, key=os.path.getctime), deleteThis
 
+# List the screenshots to be deleted
 def deletefiles(paths):
     picts = ""
-    for x in range(0,len(paths)):
+    for x in range(0, len(paths)):
         picts = picts + " " + paths[x]
     return picts
 
-AiModel = AImage.ai_image_analyzer()
+# Kill running subprocess
+def killAll(ncPro, vlcPro):
+    if ncPro:
+        os.killpg(os.getpgid(ncPro.pid), signal.SIGTERM)
+    if vlcPro.poll() is None:
+        os.killpg(os.getpgid(vlcPro.pid), signal.SIGTERM)
 
-vlcPro = subprocess.Popen(VLC.VLC_START, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
-time.sleep(2)
-x=1
-while(vlcPro.poll() == None):
+# Initialize Model
+try:
+    AiModel = AImage.ai_image_analyzer()
+except Exception as e:
+    print("Error Initializing Model: ", e)
 
-    sc_image, cleanFiles = newest(VLC.SC_PATH)
+# ncPro holds the process that opens connection port to the drone
+ncPro = None
+# vclPro holds the process for VLC player
+vlcPro = None
+# Init ncPro and vlcPro
+if VLC.SOLO_V_LINK.endswith('.sdp'):
+    ncPro = subprocess.Popen("nc 10.1.1.1 5502", shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
+try:
+    vlcPro = subprocess.Popen(VLC.VLC_START, shell=True, stdout=subprocess.PIPE, preexec_fn=os.setsid)
+except Exception as e:
+    print("Error Initializing Video - Check your VLC config: ", e)
+    killAll(ncPro, vlcPro)
+    exit(1)
 
-    print("File" + str(x) + "= " + sc_image)
+time.sleep(4)
+x = 1
+try:
+    while vlcPro.poll() is None:
 
-    res = AiModel.isTarget(sc_image)
+        sc_image, cleanFiles = newest(VLC.SC_PATH)
 
-    print("File" + sc_image + "is: " + res)
+        print("File" + str(x) + "= " + sc_image)
+        try:
+            res = AiModel.isTarget(sc_image)
+        except Exception as e:
+            print("Model Error: ", e)
+            res = None
 
-    x += 1
-    subprocess.Popen(cleanFiles, shell=True, stdout=subprocess.PIPE)
+        if res:
+            print("File" + sc_image + "is: " + "target")
+        else:
+            print("File" + sc_image + "is: " + "not target")
 
-    time.sleep(1)
+        x += 1
 
-if(vlcPro.poll() == None):
-    os.killpg(os.getpgid(vlcPro.pid), signal.SIGTERM)
-exit(1)
+        # Delete screenshots. Commented out for validation.
+        subprocess.Popen(cleanFiles, shell=True, stdout=subprocess.PIPE)
 
+        time.sleep(1)
+except Exception as e:
+    print("Unexpected error:", e)
+
+killAll(ncPro, vlcPro)
+exit(0)

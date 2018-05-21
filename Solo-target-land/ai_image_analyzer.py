@@ -5,8 +5,10 @@ from keras.optimizers import Adam
 from keras.preprocessing import image
 import numpy as np
 
+# Trainned Model
 Model = "../target_detection4.h5"
 
+# Class that loads model and finds target
 class ai_image_analyzer:
 
     def __init__(self):
@@ -20,9 +22,7 @@ class ai_image_analyzer:
         result = self.model.predict(test_image)
        
         is_target = np.argmax(result[0]) == 0
-        print("Test")
+
         print(result)
 
-        
         return is_target
-        
